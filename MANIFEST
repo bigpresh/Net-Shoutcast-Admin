@@ -1,0 +1,10 @@
+Build.PL
+Changes
+MANIFEST
+Makefile.PL
+README
+lib/Net/Shoutcast/Admin.pm
+lib/Net/Shoutcast/Admin/Song.pm
+t/00.load.t
+t/2-pod.t
+t/3-pod-coverage.t

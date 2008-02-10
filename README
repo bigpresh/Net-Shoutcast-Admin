@@ -1,0 +1,36 @@
+Net-Shoutcast-Admin - Perl module to interact with Shoutcast servers
+
+A quick module to interact with Shoutcast servers.  Currently supports fetching
+information about the current status of a shoutcast server; future improvements
+will add ability to perform actions such as kicking the current source, banning
+IPs etc, and may add Icecast support too.
+
+INSTALLATION
+
+To install this module, run the following commands:
+
+	perl Makefile.PL
+	make
+	make test
+	make install
+
+Alternatively, to install with Module::Build, you can use the following commands:
+
+	perl Build.PL
+	./Build
+	./Build test
+	./Build install
+
+
+DEPENDENCIES
+
+LWP
+XML::Simple
+
+
+COPYRIGHT AND LICENCE
+
+Copyright (C) 2008, David Precious
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
