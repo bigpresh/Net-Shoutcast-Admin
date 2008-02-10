@@ -4,8 +4,10 @@ use warnings;
 use strict;
 use Carp;
 use Net::Shoutcast::Admin::Song;
-use CGI; # for URL-encoding only; maybe use a smaller solution for this?
+use Net::Shoutcast::Admin::Listener;
+use URI::Escape;
 use LWP::UserAgent;
+use XML::Simple;
 use version; our $VERSION = qv('0.0.1');
 
 
@@ -88,7 +90,7 @@ server.  If not supplied, a suitable default will be used.
 
 sub new {
 
-    my ($class, %params) = shift;
+    my ($class, %params) = @_;
     
     my $self = bless {}, $class;
         
@@ -112,7 +114,6 @@ sub new {
     $self->{agent}   ||= "Perl/Net::Shoutcast::Admin ($VERSION)";
     $self->{timeout} ||= 10;
     
-    
     if (my @missing_params = grep { ! $self->{$_} } keys %acceptable_params) {
         carp "Net::Shoutcast::Admin->new() must be supplied with params: "
             . join ',', @missing_params;
@@ -130,9 +131,14 @@ sub new {
 
 sub _fetch_status_xml {
     my $self = shift;
+    
+    if ($self->{last_update} and (time - $self->{last_update}) < 5) {
+        # status was updated not long ago
+        return;
+    }
         
     my ($host, $port) = @$self{qw(host port)};
-    my $pass = CGI::encode( $self->{admin_password} );
+    my $pass = URI::Escape::uri_escape( $self->{admin_password} );
     
     # TODO: URL-encode password
     my $url = "http://$host:$port/admin.cgi?pass=$pass&mode=viewxml";
@@ -148,16 +154,85 @@ sub _fetch_status_xml {
         return;
     }
     
-    print "status XML:\n" . $response->content . "\n";
-    # TODO: parse it.
+    warn "url:$url\nstatus XML:\n" . $response->content . "\n";
     
+    my $data = XML::Simple::XMLin($response->content);
+    use Data::Dumper;
+    warn "data: \n" . Dumper($data);
+    $self->{data} = $data;
+    $self->{last_update} = time;
 }
 
 
 
+=item currentsong
+
+Returns a Net::Shoutcast::Admin::Song object representing the current
+song.
+
+=cut
+
+sub currentsong {
+    my $self = shift;
+    
+    my $song = Net::Shoutcast::Admin::Song->new( 
+        title => $self->{data}->{SONGTITLE}
+    );   
+    return $song;
+}
 
 
+=item song_history
 
+Returns a list of Net::Shoutcast::Admin::Song objects representing
+the the last few songs played
+
+=cut
+
+sub song_history {
+    my $self = shift;
+    my @song_objects;
+    
+    for my $song (@{ $self->{data}->{SONGHISTORY}->{SONG} }) {
+        push @song_objects, Net::Shoutcast::Admin::Song->new(
+            title => $song->{TITLE},
+            played_at => $song->{PLAYEDAT},
+        );
+    }
+    
+    return (@song_objects);
+}
+
+
+=item listeners
+
+In scalar context, returns the number of listeners currently connected.
+In list context, returns a list of Net::Shoutcast::Admin::Listener
+objects representing each listener.
+
+=cut
+
+sub listeners {
+    my $self = shift;
+    
+    if (!wantarray) {
+        # okay, it's nice and simple:
+        return $self->{data}->{CURRENTLISTENERS};
+    } else {
+        # okay, we need to return a list of N:S:A::Listener objects:
+        my @listener_objects;
+        for my $listener (@{ $self->{data}->{LISTENERS}->{LISTENER} }) {
+            push @listener_objects, Net::Shoutcast::Admin::Listener->new(
+                host         => $listener->{HOSTNAME},
+                connect_time => $listener->{CONNECTTIME},
+                underruns    => $listener->{UNDERRUNS} || 5,
+                agent        => $listener->{USERAGENT},
+            );
+        }
+            
+        return (@listener_objects);
+    }
+}
 
 
 1; # Magic true value required at end of module

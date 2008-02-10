@@ -3,7 +3,6 @@ package Net::Shoutcast::Song;
 use warnings;
 use strict;
 use Carp;
-use Lyrics::Fetcher;
 
 use version; our $VERSION = qv('0.0.1');
 
@@ -11,6 +10,14 @@ use version; our $VERSION = qv('0.0.1');
 =head1 NAME
 
 Net::Shoutcast::Admin::Song - object to represent a song
+
+
+=head1 DESCRIPTION
+
+An object representing a song (either the current song, or an entry in the
+song history).  Barely justifies being an object rather than a hashref
+at the moment, but at some point I may be able to add other useful methods,
+perhaps $song->lyrics to attempt to fetch lyrics.
 
 
 =head1 SYNOPSIS
@@ -24,11 +31,11 @@ Net::Shoutcast::Admin::Song - object to represent a song
     );
     
     if ($shoutcast->source_connected) {
-        my $current_song = $shoutcast->currentsong;
+        my $song = $shoutcast->current_song;
         
         printf "Current song is %s by %s",
-            $shoutcast->currentsong->title,
-            $shoutcast->currentsong->artist
+            $song->title,
+            $song->artist
         ;
     } else {
         print "No source is currently connected.";
@@ -58,10 +65,6 @@ as follows:
 
 =over 4
 
-=item I<artist>
-
-The artist of the song
-
 =item I<title>
 
 The title of the song
@@ -79,7 +82,7 @@ sub new {
     $self->{last_update} = 0;
     
     my %acceptable_params = map { $_ => 1 } 
-        qw(artist title);
+        qw(title);
     
     # make sure we haven't been given any bogus parameters:
     if (my @bad_params = grep { ! $acceptable_params{$_} } keys %params) {
@@ -101,19 +104,9 @@ sub new {
 }
 
 
-=item artist
-
-Returns the artist
-
-=cut
-
-sub artist {
-    return shift->{artist};
-}
-
 =item title
 
-Returns the title of the song
+Returns the artist
 
 =cut
 
@@ -121,17 +114,6 @@ sub title {
     return shift->{title};
 }
 
-=item lyrics
-
-Attempt to fetch the lyrics for this song using Lyrics::Fetcher
-
-=cut
-
-sub lyrics {
-    my $self = shift;
-    return Lyrics::Fetcher->fetch($self->artist, $self->title);
-}
-    
 
 
 

@@ -1,22 +1,20 @@
-package Net::Shoutcast::Admin;
+package Net::Shoutcast::Admin::Listener;
 
 use warnings;
 use strict;
 use Carp;
-use Net::Shoutcast::Admin::Song;
-use CGI; # for URL-encoding only; maybe use a smaller solution for this?
-use LWP::UserAgent;
+
 use version; our $VERSION = qv('0.0.1');
 
 
 =head1 NAME
 
-Net::Shoutcast::Admin - administration of Shoutcast servers
+Net::Shoutcast::Admin::Listener - object to represent a listener
 
 
-=head1 VERSION
+=head1 DESCRIPTION
 
-This document describes Net::Shoutcast::Admin version 0.0.1
+An object representing a listener, returned by Net::Shoutcast::Admin.
 
 
 =head1 SYNOPSIS
@@ -30,11 +28,13 @@ This document describes Net::Shoutcast::Admin version 0.0.1
     );
     
     if ($shoutcast->source_connected) {
-        printf "%s is currently playing %s by %s",
-            $shoutcast->dj_name,
-            $shoutcast->currentsong->title,
-            $shoutcast->currentsong->artist
-        ;
+        my @listeners = $shoutcast->listeners;
+        
+        for my $listener (@listeners) {
+            printf "Listener from %s, listening for %s",
+                $listener->host, $listener->listen_length
+            ;
+        }
     } else {
         print "No source is currently connected.";
     }
@@ -42,9 +42,7 @@ This document describes Net::Shoutcast::Admin version 0.0.1
   
 =head1 DESCRIPTION
 
-A module to interact with Shoutcast servers to retrieve information about
-their current status (and perhaps in later versions of the module, to also
-control the server in various ways).
+Object representing a listener, returned by Net::Shoutcast::Admin
 
 
 =head1 INTERFACE 
@@ -53,34 +51,33 @@ control the server in various ways).
 
 =item new
 
-$shoutcast = Net::Shoutcast::Admin->new( %params );
+There's no reason to create instances of Net::Shoutcast::Admin::Listener 
+directly; Net::Shoutcast::Admin creates and returns instances for you.
 
-Creates a new Net::Shoutcast::Admin object.  Takes a hash of options
+Having said that:
+
+  $song = Net::Shoutcast::Admin::Listener->new( %params );
+
+Creates a new Net::Shoutcast::Admin::Listener object.  Takes a hash of options
 as follows:
 
 =over 4
 
-=item B<host>
+=item I<host>
 
-The hostname of the Shoutcast server you wish to query.
+The host from which this listener is connected
 
-=item port
+=item I<connect_time>
 
-The port on which Shoutcast is running.  Defaults to 8000 if not specified.
+The number of seconds this listener has been connected
 
-=item B<admin_password>
+=item I<underruns>
 
-The admin password for the Shoutcast server.
+The number of buffer underruns this listener has suffered
 
-=item timeout
+=item I<agent>
 
-The number of seconds to wait for a response.  Defaults to 10 seconds if
-not specified.
-
-=item agent
-
-The HTTP User-Agent header which will be sent in HTTP requests to the Shoutcast
-server.  If not supplied, a suitable default will be used.
+The software this user is reportedly using to listen
 
 =back
 
@@ -88,81 +85,74 @@ server.  If not supplied, a suitable default will be used.
 
 sub new {
 
-    my ($class, %params) = shift;
-    
+    my ($class, %params) = @_;
     my $self = bless {}, $class;
         
     $self->{last_update} = 0;
     
     my %acceptable_params = map { $_ => 1 } 
-        qw(host port admin_password timeout agent);
+        qw(host connect_time underruns agent);
     
     # make sure we haven't been given any bogus parameters:
     if (my @bad_params = grep { ! $acceptable_params{$_} } keys %params) {
-        carp "Net::Shoutcast::Admin does not recognise param(s) "
+        carp "Net::Shoutcast::Admin::Listener does not recognise param(s) "
             . join ',', @bad_params;
         return;
     }
     
-    # 
     $self->{$_} = $params{$_} for keys %acceptable_params;
     
-    # set decent defaults for optional params:
-    $self->{port}    ||= 8000;
-    $self->{agent}   ||= "Perl/Net::Shoutcast::Admin ($VERSION)";
-    $self->{timeout} ||= 10;
-    
-    
     if (my @missing_params = grep { ! $self->{$_} } keys %acceptable_params) {
-        carp "Net::Shoutcast::Admin->new() must be supplied with params: "
+        carp "Net::Shoutcast::Admin::Listener->new() must be supplied with "
+        . "params: "
             . join ',', @missing_params;
         return;
     }
-    
-    # okay, fetch the data:
-    $self->_fetch_status_xml;
     
     return $self;
 
 }
 
 
+=item host
 
-sub _fetch_status_xml {
-    my $self = shift;
-        
-    my ($host, $port) = @$self{qw(host port)};
-    my $pass = CGI::encode( $self->{admin_password} );
-    
-    # TODO: URL-encode password
-    my $url = "http://$host:$port/admin.cgi?pass=$pass&mode=viewxml";
-    
-    my $ua = new LWP::UserAgent;
-    $ua->agent(   $self->{agent}   );
-    $ua->timeout( $self->{timeout} );
-    
-    my $response = $ua->get($url);
-    
-    if (!$response->is_success) {
-        carp "Failed to fetch status XML - " . $response->status_line;
-        return;
-    }
-    
-    print "status XML:\n" . $response->content . "\n";
-    # TODO: parse it.
-    
-}
+Returns the hostname this listener is connected from
+
+=cut
+
+sub host { return shift->{host} }
+
+
+=item listen_time
+
+Returns the number of seconds this listener has been connected
+
+=cut
+
+sub listen_time { return shift->{connect_time} }
 
 
 
+=item underruns
+
+Returns the number of buffer underruns this listener has suffered
+
+=cut
+
+sub underruns { return shift->{underruns} }
 
 
+=item agent
 
+Returns the agent this listener is reportedly using
+
+=cut
+
+sub agent { return shift->{agent} }
 
 
 1; # Magic true value required at end of module
 __END__
-
 
 
 =back
