@@ -5,6 +5,10 @@ information about the current status of a shoutcast server; future improvements
 will add ability to perform actions such as kicking the current source, banning
 IPs etc, and may add Icecast support too.
 
+This module is still at a very early stage; if you find it useful, feel free
+to let me know to help encourage further development :)
+
+
 INSTALLATION
 
 To install this module, run the following commands:
@@ -34,3 +38,5 @@ Copyright (C) 2008, David Precious
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
+
+$Id$

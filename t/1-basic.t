@@ -19,3 +19,7 @@ for my $listener (@listeners) {
         $listener->host, $listener->agent, $listener->listen_time
     );
 }
+
+diag("Total listeners: " . $shoutcast->listeners);
+
+diag("Current song: "    . $shoutcast->currentsong->title);

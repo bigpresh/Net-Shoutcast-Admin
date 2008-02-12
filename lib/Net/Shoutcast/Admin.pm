@@ -1,4 +1,5 @@
 package Net::Shoutcast::Admin;
+# $Id$
 
 use warnings;
 use strict;
@@ -154,11 +155,7 @@ sub _fetch_status_xml {
         return;
     }
     
-    warn "url:$url\nstatus XML:\n" . $response->content . "\n";
-    
     my $data = XML::Simple::XMLin($response->content);
-    use Data::Dumper;
-    warn "data: \n" . Dumper($data);
     $self->{data} = $data;
     $self->{last_update} = time;
 }

@@ -1,4 +1,5 @@
-package Net::Shoutcast::Song;
+package Net::Shoutcast::Admin::Song;
+# $Id$
 
 use warnings;
 use strict;
@@ -75,7 +76,7 @@ The title of the song
 
 sub new {
 
-    my ($class, %params) = shift;
+    my ($class, %params) = @_;
     
     my $self = bless {}, $class;
         
