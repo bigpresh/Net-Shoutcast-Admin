@@ -10,8 +10,11 @@ WriteMakefile(
     ABSTRACT_FROM       => 'lib/Net/Shoutcast/Admin.pm',
     PL_FILES            => {},
     PREREQ_PM => {
-        'Test::More' => 0,
-        'version'    => 0,
+        'Test::More'     => 0,
+        'version'        => 0,
+        'URI::Escape'    => 0,
+        'LWP::UserAgent' => 0,
+        'XML::Simple'    => 0,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Net-Shoutcast-Admin-*' },
