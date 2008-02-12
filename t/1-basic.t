@@ -4,10 +4,21 @@ BEGIN {
 use_ok( 'Net::Shoutcast::Admin' );
 }
 
+
+# at the moment, there's no decent automated tests (boo! hiss!).
+# to test its operation properly, connection details to a working Shoutcast
+# server are required.
+# In the next version I hope to rustle up some decent tests, using
+# Test::MockObject to fake communication with a server.
+
+# if you have a server you want to test against, uncomment the exit,
+# and add the server details below.
+exit;
+
 my $shoutcast = Net::Shoutcast::Admin->new(
-    host => 'dfr.preshweb.co.uk',
-    port => 8000,
-    admin_password => 'stella',
+    host => '',
+    port => ,
+    admin_password => '',
     agent => 'Mozilla',
 );
 

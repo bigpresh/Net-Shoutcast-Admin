@@ -2,7 +2,7 @@
 
 # Test POD coverage for SMS::AQL
 #
-# $Id: 3-pod-coverage.t 155 2007-06-26 20:18:51Z davidp $
+# $Id$
 
 
 use strict;

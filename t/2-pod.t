@@ -2,7 +2,7 @@
 
 # Test POD correctness for SMS::AQL
 #
-# $Id: 2-pod.t 155 2007-06-26 20:18:51Z davidp $
+# $Id$
 
 use strict;
 use Test::More;
