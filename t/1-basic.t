@@ -21,7 +21,6 @@ my $shoutcast = Net::Shoutcast::Admin->new(
     host => '',
     port => ,
     admin_password => '',
-    agent => 'Mozilla',
 );
 
 

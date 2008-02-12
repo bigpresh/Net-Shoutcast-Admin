@@ -112,8 +112,11 @@ sub new {
     
     # set decent defaults for optional params:
     $self->{port}    ||= 8000;
-    $self->{agent}   ||= "Perl/Net::Shoutcast::Admin ($VERSION)";
     $self->{timeout} ||= 10;
+    # In my initial testing, it seems the Shoutcast server will not respond
+    # with the status XML if the User-Agent does not contain "Mozilla"
+    # (Why?  That's just lame!)
+    $self->{agent}   ||= "Mozilla";
     
     if (my @missing_params = grep { ! $self->{$_} } keys %acceptable_params) {
         carp "Net::Shoutcast::Admin->new() must be supplied with params: "
