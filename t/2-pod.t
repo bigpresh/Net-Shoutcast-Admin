@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Test POD correctness for SMS::AQL
+# Test POD correctness
 #
 # $Id$
 

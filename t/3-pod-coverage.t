@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Test POD coverage for SMS::AQL
+# Test POD coverage
 #
 # $Id$
 
