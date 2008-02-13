@@ -9,7 +9,9 @@ use Net::Shoutcast::Admin::Listener;
 use URI::Escape;
 use LWP::UserAgent;
 use XML::Simple;
-use version; our $VERSION = qv('0.0.1');
+
+use vars qw($VERSION);
+$VERSION = '0.01';
 
 
 =head1 NAME

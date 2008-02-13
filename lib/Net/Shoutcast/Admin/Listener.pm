@@ -5,7 +5,8 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('0.0.1');
+use vars qw($VERSION);
+$VERSION = '0.01';
 
 
 =head1 NAME
