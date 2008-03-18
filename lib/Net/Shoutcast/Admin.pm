@@ -126,43 +126,69 @@ sub new {
         return;
     }
     
-    # okay, fetch the data:
-    $self->_fetch_status_xml;
+    # get an LWP::UserAgent object to make our requests with:
+    my $ua = new LWP::UserAgent;
+    if ($ua) {
+        $ua->agent(   $self->{agent}   );
+        $ua->timeout( $self->{timeout} );
+        $self->{ua} = $ua;
+    } else {
+        warn "Failed to create LWP::UserAgent object";
+        return;
+    }
     
     return $self;
 
 }
 
 
+# if we haven't fetched the status XML recently, fetch it.  Returns true if
+# we either fetched it successfully or it was fresh enough to not need
+# re-fetching, or false if we couldn't get it.
+sub _update_if_necessary {
+    my $self = shift;
+    if ($self->{last_update} and (time - $self->{last_update}) < 5) {
+            # status was updated not long ago
+            return 1;
+    }
+    
+    my ($fetched, $msg) = $self->_fetch_status_xml;
+    if (!$fetched) {
+        warn "Failed to fetch status from Shoutcast server: $msg";
+        return;
+    }
+    
+    # all good.
+    return 1;
+}
+
 
 sub _fetch_status_xml {
     my $self = shift;
-    
-    if ($self->{last_update} and (time - $self->{last_update}) < 5) {
-        # status was updated not long ago
-        return;
-    }
         
     my ($host, $port) = @$self{qw(host port)};
     my $pass = URI::Escape::uri_escape( $self->{admin_password} );
     
-    # TODO: URL-encode password
     my $url = "http://$host:$port/admin.cgi?pass=$pass&mode=viewxml";
     
-    my $ua = new LWP::UserAgent;
-    $ua->agent(   $self->{agent}   );
-    $ua->timeout( $self->{timeout} );
-    
-    my $response = $ua->get($url);
+    my $response = $self->{ua}->get($url);
     
     if (!$response->is_success) {
-        carp "Failed to fetch status XML - " . $response->status_line;
-        return;
+        my $err = "Failed to fetch status XML - " . $response->status_line;
+        carp $err;
+        return wantarray? (0, $err) : 0;
     }
     
     my $data = XML::Simple::XMLin($response->content);
+    
+    if (!$data) {
+        return wantarray? (0, 'Failed to parse XML') : 0;
+    }
+    
     $self->{data} = $data;
     $self->{last_update} = time;
+    
+    return wantarray? (1, undef) : 1;
 }
 
 
@@ -176,6 +202,7 @@ song.
 
 sub currentsong {
     my $self = shift;
+    $self->_update_if_necessary or return;
     
     my $song = Net::Shoutcast::Admin::Song->new( 
         title => $self->{data}->{SONGTITLE}
@@ -194,6 +221,7 @@ the the last few songs played
 sub song_history {
     my $self = shift;
     my @song_objects;
+    $self->_fetch_status_xml;
     
     for my $song (@{ $self->{data}->{SONGHISTORY}->{SONG} }) {
         push @song_objects, Net::Shoutcast::Admin::Song->new(
@@ -216,6 +244,7 @@ objects representing each listener.
 
 sub listeners {
     my $self = shift;
+    $self->_fetch_status_xml;
     
     if (!wantarray) {
         # okay, it's nice and simple:
