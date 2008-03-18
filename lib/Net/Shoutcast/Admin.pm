@@ -11,7 +11,7 @@ use LWP::UserAgent;
 use XML::Simple;
 
 use vars qw($VERSION);
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 
 =head1 NAME
@@ -21,7 +21,7 @@ Net::Shoutcast::Admin - administration of Shoutcast servers
 
 =head1 VERSION
 
-This document describes Net::Shoutcast::Admin version 0.0.1
+This document describes Net::Shoutcast::Admin version 0.0.2
 
 
 =head1 SYNOPSIS
@@ -289,7 +289,8 @@ David Precious  C<< <davidp@preshweb.co.uk> >>
 
 =head1 LICENCE AND COPYRIGHT
 
-Copyright (c) 2008, David Precious C<< <davidp@preshweb.co.uk> >>. All rights reserved.
+Copyright (c) 2008, David Precious C<< <davidp@preshweb.co.uk> >>. 
+All rights reserved.
 
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself. See L<perlartistic>.
