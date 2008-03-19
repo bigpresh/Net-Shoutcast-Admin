@@ -10,3 +10,6 @@ t/00.load.t
 t/1-basic.t
 t/2-pod.t
 t/3-pod-coverage.t
+t/4-mock-operation.t
+t/example.xml
+eg/example.pl

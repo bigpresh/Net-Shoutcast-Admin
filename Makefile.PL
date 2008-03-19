@@ -16,6 +16,7 @@ WriteMakefile(
         'LWP::UserAgent' => 0,
         'XML::Simple'    => 0,
     },
+    NO_META             => 1,
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Net-Shoutcast-Admin-*' },
 );

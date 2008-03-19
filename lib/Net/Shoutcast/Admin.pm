@@ -179,7 +179,8 @@ sub _fetch_status_xml {
         return wantarray? (0, $err) : 0;
     }
     
-    my $data = XML::Simple::XMLin($response->content);
+    my $data = XML::Simple::XMLin($response->content, 
+        forceArray => [qw(LISTENER SONG)]);
     
     if (!$data) {
         return wantarray? (0, 'Failed to parse XML') : 0;
@@ -251,6 +252,8 @@ sub listeners {
         return $self->{data}->{CURRENTLISTENERS};
     } else {
         # okay, we need to return a list of N:S:A::Listener objects:
+        return if !$self->{data}->{CURRENTLISTENERS};
+        
         my @listener_objects;
         for my $listener (@{ $self->{data}->{LISTENERS}->{LISTENER} }) {
             push @listener_objects, Net::Shoutcast::Admin::Listener->new(
@@ -263,6 +266,20 @@ sub listeners {
             
         return (@listener_objects);
     }
+}
+
+
+=item source_connected
+
+Returns true if the stream is currently up (a source is connected and streaming
+audio to the server)
+
+=cut
+
+sub source_connected {
+    my $self = shift;
+    $self->_fetch_status_xml;   
+    return ($self->{data}->{STREAMSTATUS});
 }
 
 

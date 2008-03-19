@@ -68,6 +68,10 @@ as follows:
 
 The title of the song
 
+=item I<played_at>
+
+The timestamp this song started playing.
+
 =back
 
 =cut
@@ -81,7 +85,10 @@ sub new {
     $self->{last_update} = 0;
     
     my %acceptable_params = map { $_ => 1 } 
+        qw(title played_at);
+    my %required_params = map { $_ => 1 } 
         qw(title);
+    
     
     # make sure we haven't been given any bogus parameters:
     if (my @bad_params = grep { ! $acceptable_params{$_} } keys %params) {
@@ -92,7 +99,7 @@ sub new {
     
     $self->{$_} = $params{$_} for keys %acceptable_params;
     
-    if (my @missing_params = grep { ! $self->{$_} } keys %acceptable_params) {
+    if (my @missing_params = grep { ! $self->{$_} } keys %required_params) {
         carp "Net::Shoutcast::Admin->new() must be supplied with params: "
             . join ',', @missing_params;
         return;
@@ -113,7 +120,9 @@ sub title {
     return shift->{title};
 }
 
-
+sub played_at {
+    return shift->{played_at};
+}
 
 
 

@@ -34,7 +34,7 @@ An object representing a listener, returned by Net::Shoutcast::Admin.
         
         for my $listener (@listeners) {
             printf "Listener from %s, listening for %s",
-                $listener->host, $listener->listen_length
+                $listener->host, $listener->listen_time
             ;
         }
     } else {

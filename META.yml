@@ -1,7 +1,7 @@
  --- #YAML:1.0
  name: Net-Shoutcast-Admin
  abstract: Fetch information from a Shoutcast streaming audio server
- version: 0.01
+ version: 0.02
  author:
    - David Precious <davidp@preshweb.co.uk>
  license: perl
