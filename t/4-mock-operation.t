@@ -8,7 +8,6 @@
 use strict;
 use warnings;
 use Test::More;
-use FileHandle;
 use lib '../lib';
 
 eval "use Test::MockObject::Extends";
@@ -34,6 +33,8 @@ my $mocked_ua =
 $mocked_ua->mock("get", \&mock_get);
 $mocked_ua->mock("is_success", sub { 1 });
 
+my $example_xml = join '', <DATA>;
+
 sub mock_get {
     my ($self, $url) = @_;
     
@@ -44,11 +45,8 @@ sub mock_get {
     my $res = Test::MockObject->new();
     $res->set_true( "is_success" );
     
-    my $fh = new FileHandle 'example.xml';
-    my $xml = join '', $fh->getlines;
-    $fh->close;
     
-    $res->set_always('content', $xml);
+    $res->set_always('content', $example_xml);
     return $res;
 }
 
@@ -81,3 +79,89 @@ is($listeners[0]->listen_time, 67, 'first listener has correct listen_time');
 
 #diag("Current song: "    . $shoutcast->currentsong->title);
 
+
+__DATA__
+<?xml version="1.0" encoding="utf-8"?>
+<SHOUTCASTSERVER>
+    <CURRENTLISTENERS>2</CURRENTLISTENERS>
+    <PEAKLISTENERS>16</PEAKLISTENERS>
+    <MAXLISTENERS>64</MAXLISTENERS>
+    <REPORTEDLISTENERS>2</REPORTEDLISTENERS>
+    <AVERAGETIME>26255</AVERAGETIME>
+    <SERVERGENRE>mixed</SERVERGENRE>
+    <SERVERURL>http://example.com/</SERVERURL>
+    <SERVERTITLE>Fake Radio Stream</SERVERTITLE>
+    <SONGTITLE>Fake Song Title</SONGTITLE>
+    <SONGURL>http://www.example.net/</SONGURL>
+    <IRC>#example</IRC>
+    <ICQ />
+    <AIM />
+    <WEBHITS>163038</WEBHITS>
+    <STREAMHITS>11574</STREAMHITS>
+    <STREAMSTATUS>1</STREAMSTATUS>
+    <BITRATE>128</BITRATE>
+    <CONTENT>audio/mpeg</CONTENT>
+    <VERSION>1.9.8</VERSION>
+    <WEBDATA>
+        <INDEX>1828</INDEX>
+        <LISTEN>755</LISTEN>
+        <PALM7>0</PALM7>
+        <LOGIN>0</LOGIN>
+        <LOGINFAIL>51</LOGINFAIL>
+        <PLAYED>17</PLAYED>
+        <COOKIE>5</COOKIE>
+        <ADMIN>155</ADMIN>
+        <UPDINFO>20059</UPDINFO>
+        <KICKSRC>117</KICKSRC>
+        <KICKDST>0</KICKDST>
+        <UNBANDST>0</UNBANDST>
+        <BANDST>0</BANDST>
+        <VIEWBAN>1</VIEWBAN>
+        <UNRIPDST>0</UNRIPDST>
+        <RIPDST>0</RIPDST>
+        <VIEWRIP>1</VIEWRIP>
+        <VIEWXML>139881</VIEWXML>
+        <VIEWLOG>1</VIEWLOG>
+        <INVALID>158</INVALID>
+    </WEBDATA>
+    <LISTENERS>
+        <LISTENER>
+            <HOSTNAME>127.0.0.1</HOSTNAME>
+            <USERAGENT>testclient/1.2.3</USERAGENT>
+            <UNDERRUNS>3</UNDERRUNS>
+            <CONNECTTIME>67</CONNECTTIME>
+            <POINTER>0</POINTER>
+            <UID>11575</UID>
+        </LISTENER>
+        <LISTENER>
+            <HOSTNAME>127.0.0.2</HOSTNAME>
+            <USERAGENT>badgerous/3.2.1</USERAGENT>
+            <UNDERRUNS>0</UNDERRUNS>
+            <CONNECTTIME>351</CONNECTTIME>
+            <POINTER>0</POINTER>
+            <UID>11577</UID>
+        </LISTENER>
+    </LISTENERS>
+    <SONGHISTORY>
+        <SONG>
+            <PLAYEDAT>1205868797</PLAYEDAT>
+            <TITLE>15 9PM (Till I Come) (Signum Mix)</TITLE>
+        </SONG>
+        <SONG>
+            <PLAYEDAT>1205868345</PLAYEDAT>
+            <TITLE>14 - I Get Lost - Eric Clapton</TITLE>
+        </SONG>
+        <SONG>
+            <PLAYEDAT>1205868066</PLAYEDAT>
+            <TITLE>01 - Headstrong - Trapt</TITLE>
+        </SONG>
+        <SONG>
+            <PLAYEDAT>1205867953</PLAYEDAT>
+            <TITLE>03 - Blur - Song 2</TITLE>
+        </SONG>
+        <SONG>
+            <PLAYEDAT>1205867567</PLAYEDAT>
+            <TITLE>20 - Lynyrd Skynyrd - Free Bird</TITLE>
+        </SONG>
+    </SONGHISTORY>
+</SHOUTCASTSERVER>
