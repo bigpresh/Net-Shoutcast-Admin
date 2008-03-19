@@ -1,4 +1,4 @@
-# $Id: 1-basic.t 225 2008-02-12 23:49:44Z davidp $
+# $Id$
 
 # mock tests for Net::Shoutcast::Admin
 # use Test::MockObject::Extends to fake communication with a Shoutcast server,
