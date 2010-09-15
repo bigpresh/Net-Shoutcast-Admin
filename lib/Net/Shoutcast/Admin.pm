@@ -65,7 +65,7 @@ as follows:
 
 =over 4
 
-=item B<host>
+=item host
 
 The hostname of the Shoutcast server you wish to query.
 
@@ -73,7 +73,7 @@ The hostname of the Shoutcast server you wish to query.
 
 The port on which Shoutcast is running.  Defaults to 8000 if not specified.
 
-=item B<admin_password>
+=item admin_password
 
 The admin password for the Shoutcast server.
 
@@ -196,7 +196,7 @@ sub _fetch_status_xml {
 
 =item currentsong
 
-Returns a Net::Shoutcast::Admin::Song object representing the current
+Returns a <Net::Shoutcast::Admin::Song> object representing the current
 song.
 
 =cut
@@ -214,7 +214,7 @@ sub currentsong {
 
 =item song_history
 
-Returns a list of Net::Shoutcast::Admin::Song objects representing
+Returns a list of L<Net::Shoutcast::Admin::Song> objects representing
 the the last few songs played
 
 =cut
@@ -238,7 +238,7 @@ sub song_history {
 =item listeners
 
 In scalar context, returns the number of listeners currently connected.
-In list context, returns a list of Net::Shoutcast::Admin::Listener
+In list context, returns a list of L<Net::Shoutcast::Admin::Listener>
 objects representing each listener.
 
 =cut

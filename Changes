@@ -1,5 +1,8 @@
 Revision history for Net-Shoutcast-Admin
 
+0.03  ????-??-??
+       Some POD fixes
+
 0.02  2008-03-19
        Improvements, some documentation fixes, adding new methods, handle
        a single listener properly by using XML::Simple's forceArray option.
